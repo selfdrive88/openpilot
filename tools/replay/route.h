@@ -5,6 +5,7 @@
 #include <string>
 
 #include <QDateTime>
+#include <QDir>
 #include <QFutureSynchronizer>
 
 #include "tools/replay/framereader.h"
@@ -41,6 +42,7 @@ public:
 
 protected:
   bool loadFromLocal();
+  void addFolderToSegment(int seg_num, QDir segment_dir);
   bool loadFromServer();
   bool loadFromJson(const QString &json);
   void addFileToSegment(int seg_num, const QString &file);

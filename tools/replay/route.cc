@@ -1,6 +1,5 @@
 #include "tools/replay/route.h"
 
-#include <QDir>
 #include <QEventLoop>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -14,10 +13,18 @@
 #include "tools/replay/util.h"
 
 Route::Route(const QString &route, const QString &data_dir) : data_dir_(data_dir) {
-  route_ = parseRoute(route);
+  if (route.length() == 20) {
+    // Support "dongle_id/timestamp/segment_id" folder structure, as used by HuggingFace dataset
+    const QDir dir(data_dir);
+    route_ = parseRoute(dir.dirName() + "|" + route);
+    data_dir_ = data_dir + route;
+  } else {
+    route_ = parseRoute(route);
+  }
 }
 
 RouteIdentifier Route::parseRoute(const QString &str) {
+  qDebug() << str;
   QRegExp rx(R"(^(?:([a-z0-9]{16})([|_/]))?(\d{4}-\d{2}-\d{2}--\d{2}-\d{2}-\d{2})(?:(--|/)(\d*))?$)");
   if (rx.indexIn(str) == -1) return {};
 
@@ -67,13 +74,25 @@ bool Route::loadFromLocal() {
     int pos = folder.lastIndexOf("--");
     if (pos != -1 && folder.left(pos) == route_.timestamp) {
       const int seg_num = folder.mid(pos + 2).toInt();
-      QDir segment_dir(log_dir.filePath(folder));
-      for (const auto &f : segment_dir.entryList(QDir::Files)) {
-        addFileToSegment(seg_num, segment_dir.absoluteFilePath(f));
+      addFolderToSegment(seg_num, log_dir.filePath(folder));
+    } else {
+      bool ok = false;
+      const int seg_num = folder.toInt(&ok);
+      if (ok) {
+        addFolderToSegment(seg_num, log_dir.filePath(folder));
       }
     }
+
   }
   return !segments_.empty();
+}
+
+void Route::addFolderToSegment(int seg_num, QDir segment_dir) {
+  qDebug() << seg_num << segment_dir;
+  for (const auto &f : segment_dir.entryList(QDir::Files)) {
+    qDebug() << seg_num << segment_dir << f;
+    addFileToSegment(seg_num, segment_dir.absoluteFilePath(f));
+  }
 }
 
 void Route::addFileToSegment(int n, const QString &file) {

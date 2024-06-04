@@ -255,6 +255,12 @@ class CAR(Platforms):
     dbc_dict('toyota_rav4_prime_generated', 'toyota_tss2_adas'),
     flags=ToyotaFlags.TSS2 | ToyotaFlags.NO_STOP_TIMER | ToyotaFlags.NO_DSU | ToyotaFlags.SECOC | ToyotaFlags.ALT_GAS_MSG | ToyotaFlags.GEAR_PACKET_HYBRID,
   )
+  TOYOTA_SIENNA_HYBRID = PlatformConfig(
+    [],
+    CarSpecs(mass=4750. * CV.LB_TO_KG, wheelbase=3.065, steerRatio=17.88, tireStiffnessFactor=0.5533),
+    dbc_dict('toyota_rav4_prime_generated', 'toyota_tss2_adas'),
+    flags=ToyotaFlags.TSS2 | ToyotaFlags.NO_STOP_TIMER | ToyotaFlags.NO_DSU | ToyotaFlags.SECOC | ToyotaFlags.ALT_GAS_MSG | ToyotaFlags.GEAR_PACKET_HYBRID,
+  )
   TOYOTA_MIRAI = ToyotaTSS2PlatformConfig(
     [ToyotaCarDocs("Toyota Mirai 2021")],
     CarSpecs(mass=4300. * CV.LB_TO_KG, wheelbase=2.91, steerRatio=14.8, tireStiffnessFactor=0.8),
